@@ -26,7 +26,7 @@ def load_data():
     }
     df['Dia da Semana'] = df['Dia da Semana'].map(dias_pt)
     
-    # Força a coluna correta de faltas totais a ser numérica (Exatamente como está na coluna Z)
+    # Força a coluna correta de faltas totais a ser numérica
     df['Total Faltas Diaria'] = pd.to_numeric(df['Total Faltas Diaria'], errors='coerce').fillna(0)
     
     return df
@@ -48,7 +48,7 @@ try:
 
     # Aplicando os filtros escolhidos pelo usuário
     df_filtrado = df.copy()
-    if esco_selecionada != "Todas":
+    if escola_selecionada != "Todas":
         df_filtrado = df_filtrado[df_filtrado['Escola'] == escola_selecionada]
     if turno_selecionada != "Todos":
         df_filtrado = df_filtrado[df_filtrado['Turno'] == turno_selecionada]
@@ -78,13 +78,12 @@ try:
     # 5. TABELA MATRICIAL POR SÉRIE (ANO / ETAPA)
     st.subheader("🎒 Detalhamento de Faltas por Ano / Série")
     
-    # Lista exata das colunas de séries que aparecem nos seus dois prints (K até Y)
+    # Lista exata das colunas de séries
     colunas_series = [
         'Berçário', 'Maternal I', 'Maternal II', '1º Período', '2º Período', 
         '1º Ano', '2º Ano', '3º Ano', '4º Ano', '5º Ano', '6º Ano', '7º Ano', '8º Ano', '9º Ano', 'EJA'
     ]
     
-    # Garante que o Python converta todas essas colunas de séries para números antes de somar
     for col in colunas_series:
         if col in df_filtrado.columns:
             df_filtrado[col] = pd.to_numeric(df_filtrado[col], errors='coerce').fillna(0)
@@ -92,7 +91,6 @@ try:
     colunas_existentes = [col for col in colunas_series if col in df_filtrado.columns]
     
     if colunas_existentes:
-        # Agrupa os totais de faltas de cada série por Escola
         df_series = df_filtrado.groupby('Escola')[colunas_existentes].sum()
         st.dataframe(df_series, use_container_width=True)
     else:
