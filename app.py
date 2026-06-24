@@ -7,17 +7,18 @@ st.set_page_config(page_title="Dashboard de Infrequência", layout="wide")
 st.title("📊 Monitoramento de Faltas Escolares 2026")
 
 # 1. CONEXÃO COM O GOOGLE PLANILHAS
-# Cole o ID da sua planilha real entre as aspas abaixo:
-SHEET_ID = "1m9A-P5xR05fZPpQMlzSsr9efnpBDAuDPLujLIGenjts"
-url = f"https://google.com{SHEET_ID}/gviz/tq?tqx=out:csv&sheet=Respostas"
+SHEET_ID = "1m9A-P5xR05fZPpQMlzSsr9efnpBDAuDPlujLIGenjts"
+# Link corrigido apontando para a aba em maiúsculo
+url = f"https://google.com{SHEET_ID}/gviz/tq?tqx=out:csv&sheet=PAINEL DE MONITORAMENTO"
 
 @st.cache_data(ttl=300) # Atualiza os dados a cada 5 minutos
 def load_data():
     df = pd.read_csv(url)
     
-    # Tratamento da coluna de Data
-    df['Data'] = pd.to_datetime(df['Data'], errors='coerce')
-    df['Dia da Semana'] = df['Data'].dt.strftime('%A')
+    # Tratamento da coluna de Data usando o nome real da sua planilha
+    # Se você preferir usar a coluna B, troque 'Carimbo de data/hora' por 'Data' abaixo
+    df['Carimbo de data e hora'] = pd.to_datetime(df['Carimbo de data e hora'], errors='coerce')
+    df['Dia da Semana'] = df['Carimbo de data e hora'].dt.strftime('%A')
     
     # Tradução dos dias
     dias_pt = {
@@ -30,14 +31,6 @@ def load_data():
     df['Total Faltas Diárias'] = pd.to_numeric(df['Total Faltas Diárias'], errors='coerce').fillna(0)
     return df
 
-try:
-    df = load_data()
-
-    # FILTROS LATERAIS
-    st.sidebar.header("Filtros de Análise")
-    
-    escolas = ["Todas"] + list(df['Escola'].dropna().unique())
-    escola_selecionada = st.sidebar.selectbox("Selecione a Escola", escolas)
     
     turnos = ["Todos"] + list(df['Turno'].dropna().unique())
     turno_selecionada = st.sidebar.selectbox("Selecione o Turno", turnos)
